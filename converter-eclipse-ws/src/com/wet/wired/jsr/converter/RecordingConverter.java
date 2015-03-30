@@ -46,6 +46,7 @@ import javax.media.datasink.DataSinkListener;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.FileTypeDescriptor;
+import javax.media.protocol.PullBufferStream;
 
 public class RecordingConverter implements ControllerListener, DataSinkListener {
 
@@ -74,7 +75,7 @@ public class RecordingConverter implements ControllerListener, DataSinkListener 
    }
 
    public void process(String recordingFile, String movieFile) throws Exception {
-
+      finished = false;
       MediaLocator mediaLocator = new MediaLocator(new File(movieFile).toURI()
             .toURL());
       PlayerDataSource playerDataSource = new PlayerDataSource(recordingFile);
@@ -107,6 +108,12 @@ public class RecordingConverter implements ControllerListener, DataSinkListener 
       waitForFileDone();
       dataSink.close();
       processor.removeControllerListener(this);
+      PullBufferStream[] streams = playerDataSource.getStreams();
+      for (PullBufferStream stream : streams) {
+         if (stream instanceof PlayerSourceStream) {
+            ((PlayerSourceStream)stream).close();
+         }
+      }
    }
 
    void waitForFileDone() {

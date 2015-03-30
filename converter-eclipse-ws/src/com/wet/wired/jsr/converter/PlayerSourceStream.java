@@ -132,4 +132,8 @@ class PlayerSourceStream implements PullBufferStream {
    public Object getControl(String type) {
       return null;
    }
+   
+   public void close() throws IOException {
+      inStream.close();
+   }
 }
